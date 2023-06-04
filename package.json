@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@fortaine/fetch-event-source": "^3.0.6",
     "axios": "^1.4.0",
     "chatgpt": "^5.2.5",
     "dotenv": "^16.0.3",
