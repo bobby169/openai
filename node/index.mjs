@@ -1,4 +1,5 @@
 import { openai, proxy } from './common.mjs'
+import { v4 as uuidv4 } from 'uuid'
 import express from 'express'
 
 const app = express()
@@ -25,10 +26,16 @@ app.post('/ask', async (req, res) => {
     const completion = response.data.choices[0].message
     return res.status(200).json({
       success: true,
-      message: completion
+      message: completion,
+      messageId: uuidv4()
     })
   } catch (error) {
-    console.log(error.message)
+    if (error.response) {
+      console.log(error.response.status)
+      console.log(error.response.data)
+    } else {
+      console.log(error.message)
+    }
   }
 })
 
