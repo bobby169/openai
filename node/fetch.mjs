@@ -1,9 +1,3 @@
-/// <reference lib="dom" />
-import axios from 'axios'
-import { proxy } from './common.mjs'
-import * as parse from '@fortaine/fetch-event-source/parse'
-// const fetch = globalThis.fetc
-
 // https://github.com/openai/openai-node/issues/18
 
 const accessToken =
@@ -42,7 +36,6 @@ fetch(apiUrl, fetchOptions).then(async (response) => {
   const r = response.body
   if (!r) throw new Error('No response body')
 
-  // const reader = r.getReader()
   const d = new TextDecoder('utf8')
   const reader = r.getReader()
 
@@ -52,25 +45,14 @@ fetch(apiUrl, fetchOptions).then(async (response) => {
         return
       }
 
-      // let decodeds = d.decode(value)
-      let decodeds = new TextDecoder().decode(value)
-      // console.log(decodeds)
-      // process.stdout.write(decodeds)
-
-      // console.info(decodeds)
-      // let regex = /(\s+)|(\n+)|(\r+)/g
-      // let lines = decodeds.replace(/^\s*|\n*|\r*/gm, '')
-      // console.info(lines)
+      let decodeds = d.decode(value)
       let lines = decodeds
         .replace(/\[DONE\]/g, '')
         .replace(/\n+/g, '')
         .split('data: ')
-      // console.log(lines, 'end')
       for (const line of lines) {
         try {
           const parsed = JSON.parse(line)
-          // console.log(parsed.choices[0].text)
-          // console.log(parsed)
           const text = parsed.message.content.parts[0]
           console.info(text)
           //         // fullText += text
@@ -79,63 +61,8 @@ fetch(apiUrl, fetchOptions).then(async (response) => {
         }
       }
 
-      // let decodedArray = decodeds.split('data: ')
-      // console.log(decodedArray)
-
-      // decodedArray.forEach((decoded) => {
-      //   if (decoded !== '') {
-      //     if (decoded.trim() === '[DONE]') {
-      //       return
-      //     } else {
-      //       const parsed = JSON.parse(decoded)
-      //       // console.info(parsed)
-      //       const text = parsed.message.content.parts[0]
-      //       console.info(text)
-      //     }
-      //   }
-      // })
       return readStream(reader)
     })
   }
   readStream(reader)
-
-  // const d = new TextDecoder('utf8')
-  // const reader = await r.getReader()
-  // let fullText = ''
-  // while (true) {
-  //   const { value, done } = await reader.read()
-  //   if (done) {
-  //     console.log('done')
-  //     break
-  //   } else {
-  //     const decodedString = d.decode(value)
-  //     console.log(decodedString)
-  //     try {
-  //       let decodedArray = decodedString.split('data: ')
-  //       console.info(decodedArray)
-  //       // decodedArray.forEach((decoded) => {
-  //       //   if (decoded !== '') {
-  //       //     if (decoded.trim() === '[DONE]') {
-  //       //       return
-  //       //     } else {
-  //       //       try {
-  //       //         // console.log(decoded)
-  //       //         // const parsed = JSON.parse(decoded)
-  //       //         // console.info(parsed)
-  //       //         // const text = parsed.message.content.parts[0]
-  //       //         // console.info(text)
-  //       //         // fullText += text
-  //       //       } catch (e) {
-  //       //         console.error(e)
-  //       //       }
-  //       //     }
-  //       //   }
-  //       // })
-  //     } catch (e) {
-  //       // the last line is data: [DONE] which is not parseable either, so we catch that.
-  //       console.log(e, 'But parsed string is below\n\n\n\n')
-  //       console.log(fullText)
-  //     }
-  //   }
-  // }
 })
