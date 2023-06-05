@@ -38,27 +38,24 @@ try {
       // proxy: proxy
     }
   )
-  res.data.on('data', (resp) => {
-    console.info(resp)
-  })
-  // res.data.on(
-  //   'data',
-  //   parse.getLines(
-  //     parse.getMessages((event) => {
-  //       const { data } = event
+  res.data.on(
+    'data',
+    parse.getLines(
+      parse.getMessages((event) => {
+        const { data } = event
 
-  //       // https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream
-  //       if (data === '[DONE]') {
-  //         process.stdout.write('\n')
-  //         console.info('done')
-  //         return
-  //       }
-  //       const parsed = JSON.parse(data)
-  //       const text = parsed.message.content.parts[0]
-  //       process.stdout.write(text)
-  //     })
-  //   )
-  // )
+        // https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream
+        if (data === '[DONE]') {
+          process.stdout.write('\n')
+          console.info('done')
+          return
+        }
+        const parsed = JSON.parse(data)
+        const text = parsed.message.content.parts[0]
+        process.stdout.write(text)
+      })
+    )
+  )
 } catch (error) {
   console.info(error)
 }
