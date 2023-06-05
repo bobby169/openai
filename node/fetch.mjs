@@ -32,37 +32,41 @@ const fetchOptions = {
   })
 }
 
-fetch(apiUrl, fetchOptions).then(async (response) => {
-  const r = response.body
-  if (!r) throw new Error('No response body')
-
-  const d = new TextDecoder('utf8')
-  const reader = r.getReader()
-
-  function readStream(reader) {
-    return reader.read().then(({ done, value }) => {
-      if (done) {
-        return
-      }
-
-      let decodeds = d.decode(value)
-      let lines = decodeds
-        .replace(/\[DONE\]/g, '')
-        .replace(/\n+/g, '')
-        .split('data: ')
-      for (const line of lines) {
-        try {
-          const parsed = JSON.parse(line)
-          const text = parsed.message.content.parts[0]
-          console.info(text)
-          //         // fullText += text
-        } catch (error) {
-          // console.error('Could not JSON parse stream message', line, error)
-        }
-      }
-
-      return readStream(reader)
-    })
+function parseStream(decodeds) {
+  let lines = decodeds
+    .replace(/\[DONE\]/g, '')
+    .replace(/\n+/g, '')
+    .split('data: ')
+  for (const line of lines) {
+    try {
+      const parsed = JSON.parse(line)
+      const text = parsed.message.content.parts[0]
+      console.info(text)
+      //         // fullText += text
+    } catch (error) {
+      // console.error('Could not JSON parse stream message', line, error)
+    }
   }
-  readStream(reader)
-})
+}
+
+async function getData() {
+  const response = await fetch(apiUrl, fetchOptions)
+  const body = await response.body
+  if (!body) throw new Error('No response body')
+  const reader = body.getReader()
+  let isDone = false
+  const decoder = new TextDecoder('utf8')
+  while (!isDone) {
+    const { done, value } = await reader.read()
+    isDone = done
+    // console.log('done: ' + done + '\nvalue: ' + value)
+    if (done) {
+      return
+    } else {
+      const decodeds = decoder.decode(value)
+      parseStream(decodeds)
+    }
+  }
+}
+
+getData()
