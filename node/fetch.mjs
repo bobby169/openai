@@ -52,29 +52,30 @@ fetch(apiUrl, fetchOptions).then(async (response) => {
         return
       }
 
-      let decodeds = d.decode(value)
-      // console.info(decodeds)
+      // let decodeds = d.decode(value)
+      let decodeds = new TextDecoder().decode(value)
+      // console.log(decodeds)
+      // process.stdout.write(decodeds)
 
-      const lines = decodeds
-        .toString()
-        .split('\n')
-        .filter((line) => line.trim() !== '')
+      // console.info(decodeds)
+      // let regex = /(\s+)|(\n+)|(\r+)/g
+      // let lines = decodeds.replace(/^\s*|\n*|\r*/gm, '')
+      // console.info(lines)
+      let lines = decodeds
+        .replace(/\[DONE\]/g, '')
+        .replace(/\n+/g, '')
+        .split('data: ')
+      // console.log(lines, 'end')
       for (const line of lines) {
-        const message = line.replace(/^data: /, '')
-        if (message === '[DONE]') {
-          return // Stream finished
-        }
-        // console.info(message)
-        // console.info('\n\n')s
         try {
-          const parsed = JSON.parse(message)
+          const parsed = JSON.parse(line)
           // console.log(parsed.choices[0].text)
-          // console.log(parsed)s
+          // console.log(parsed)
           const text = parsed.message.content.parts[0]
           console.info(text)
           //         // fullText += text
         } catch (error) {
-          console.error('Could not JSON parse stream message', message, error)
+          // console.error('Could not JSON parse stream message', line, error)
         }
       }
 

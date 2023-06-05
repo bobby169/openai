@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fortaine/fetch-event-source": "^3.0.6",
+    "@fortaine/openai": "^5.3.1",
     "axios": "^1.4.0",
     "chatgpt": "^5.2.5",
     "dotenv": "^16.0.3",
